@@ -1,9 +1,8 @@
 package com.bwap.weatherapp.WeatherApp.backend.model;
 
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.DaysList;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Main;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Weather;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Wind;
+import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.*;
+
+import java.util.List;
 
 public class WeatherInfo {
 	
@@ -15,9 +14,11 @@ public class WeatherInfo {
 	private final Double windSpeed;
 	private final Integer windDirection;
 	private final Integer dataTime;
+	private final String cityName;
 
 	public WeatherInfo(Double currentTemp, Double minTemp, Double maxTemp, java.util.List weatherConditions,
-					   Double rainProbability, Double windSpeed, Integer windDirection, Integer dataTime) {
+					   Double rainProbability, Double windSpeed, Integer windDirection, Integer dataTime,
+					   String cityName) {
 		this.currentTemp = currentTemp;
 		this.minTemp = minTemp;
 		this.maxTemp = maxTemp;
@@ -26,9 +27,10 @@ public class WeatherInfo {
 		this.windSpeed = windSpeed;
 		this.windDirection = windDirection;
 		this.dataTime = dataTime;
+		this.cityName = cityName;
 	}
 
-	public WeatherInfo(DaysList theDaysList, Main theMain, Wind theWind){
+	public WeatherInfo(DaysList theDaysList, Main theMain, Wind theWind, City theCity){
 		this.currentTemp = theMain.getTemp();
 		this.minTemp = theMain.getTempMin();
 		this.maxTemp = theMain.getTempMax();
@@ -37,7 +39,9 @@ public class WeatherInfo {
 		this.windSpeed = theWind.getSpeed();
 		this.windDirection = theWind.getDeg();
 		this.dataTime = theDaysList.getDt();
+		this.cityName = theCity.getName();
 	}
+
 
 	public Double getCurrentTemp() {
 		return currentTemp;
@@ -51,7 +55,7 @@ public class WeatherInfo {
 		return maxTemp;
 	}
 
-	public java.util.List<Weather> getWeatherConditions() {
+	public List<Weather> getWeatherConditions() {
 		return weatherConditions;
 	}
 
@@ -71,17 +75,22 @@ public class WeatherInfo {
 		return dataTime;
 	}
 
+	public String getCityName() {
+		return cityName;
+	}
+
 	@Override
 	public String toString() {
 		return "WeatherInfo{" +
-				"currentTemp='" + currentTemp + '\'' +
-				", minTemp='" + minTemp + '\'' +
-				", maxTemp='" + maxTemp + '\'' +
-				", weatherConditions='" + weatherConditions + '\'' +
-				", rainProbability='" + rainProbability + '\'' +
-				", windSpeed='" + windSpeed + '\'' +
-				", windDirection='" + windDirection + '\'' +
-				", dataTime='" + dataTime + '\'' +
+				"currentTemp=" + currentTemp +
+				", minTemp=" + minTemp +
+				", maxTemp=" + maxTemp +
+				", weatherConditions=" + weatherConditions +
+				", rainProbability=" + rainProbability +
+				", windSpeed=" + windSpeed +
+				", windDirection=" + windDirection +
+				", dataTime=" + dataTime +
+				", cityName='" + cityName + '\'' +
 				'}';
 	}
 }

@@ -1,6 +1,9 @@
-package com.bwap.weatherapp.WeatherApp.UI;
+/*package com.bwap.weatherapp.WeatherApp.UI;
 
+
+import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Wind;
 import com.bwap.weatherapp.WeatherApp.backend.CurrentWeatherService;
+import com.bwap.weatherapp.WeatherApp.backend.Weather5DayService;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
@@ -20,7 +23,7 @@ public class CurrentView extends UI {
 
     @Autowired
     private CurrentWeatherService weatherService;
-    private CurrentWeatherService weatherService5Day;
+    private Weather5DayService weatherService5Day;
 
     private VerticalLayout mainLayout;
     private NativeSelect<String> unitSelect;
@@ -161,7 +164,7 @@ public class CurrentView extends UI {
         currentWeatherCond.setStyleName(ValoTheme.LABEL_BOLD);
         currentWeatherCond.setStyleName(ValoTheme.LABEL_COLORED);
         descriptionLayout.addComponent(currentWeatherCond);
-        descriptionLayout.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        descriptionLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         // Latest weather data time
         dt = new Label("Lastly updated: -");
@@ -179,36 +182,35 @@ public class CurrentView extends UI {
         maxTemp = new Label("Max: -");
         descriptionLayout.addComponents(maxTemp);
 
-        VerticalLayout pressureLayout = new VerticalLayout();
-        pressureLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-
         pressure = new Label("Pressure: -");
-        pressureLayout.addComponents(pressure);
+        descriptionLayout.addComponents(pressure);
 
         humidity = new Label("Humidity: -");
-        pressureLayout.addComponents(humidity);
+        descriptionLayout.addComponents(humidity);
 
         windSpeed = new Label("Wind speed: -");
-        pressureLayout.addComponents(windSpeed);
+        descriptionLayout.addComponents(windSpeed);
 
         windDegree = new Label("Wind degree: -");
-        pressureLayout.addComponents(windDegree);
+        descriptionLayout.addComponents(windDegree);
 
         feelsLike = new Label("Feels like: -");
-        pressureLayout.addComponents(feelsLike);
+        descriptionLayout.addComponents(feelsLike);
 
-        mainDescriptionLayout.addComponents(descriptionLayout, pressureLayout);
-        mainLayout.addComponents(dashboard, mainDescriptionLayout);
+        mainDescriptionLayout.addComponents(descriptionLayout);
+        mainLayout.addComponents(mainDescriptionLayout);
 
         // 2nd vertical layout for 5 day data
+        mainDescriptionLayout2 = new HorizontalLayout();
+        mainDescriptionLayout2.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         // Description layout
         VerticalLayout descriptionLayout2 = new VerticalLayout();
-        currentWeatherCond2 = new Label("Next 5 day");
+        currentWeatherCond2 = new Label("Next 5 Days");
         currentWeatherCond2.setStyleName(ValoTheme.LABEL_BOLD);
         currentWeatherCond2.setStyleName(ValoTheme.LABEL_COLORED);
-        descriptionLayout2.addComponent(currentWeatherCond);
-        descriptionLayout2.setDefaultComponentAlignment(Alignment.TOP_LEFT);
+        descriptionLayout2.addComponent(currentWeatherCond2);
+        descriptionLayout2.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
         // Latest weather data time
         dt2 = new Label("Lastly updated: -");
@@ -229,26 +231,23 @@ public class CurrentView extends UI {
         pop = new Label("Rain Probability: -");
         descriptionLayout2.addComponents(pop);
 
-        VerticalLayout pressureLayout2 = new VerticalLayout();
-        pressureLayout2.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-
         pressure2 = new Label("Pressure: -");
-        pressureLayout2.addComponents(pressure2);
+        descriptionLayout2.addComponents(pressure2);
 
         humidity2 = new Label("Humidity: -");
-        pressureLayout2.addComponents(humidity2);
+        descriptionLayout2.addComponents(humidity2);
 
         windSpeed2 = new Label("Wind speed: -");
-        pressureLayout2.addComponents(windSpeed2);
+        descriptionLayout2.addComponents(windSpeed2);
 
         windDegree2 = new Label("Wind degree: -");
-        pressureLayout2.addComponents(windDegree2);
+        descriptionLayout2.addComponents(windDegree2);
 
         feelsLike2 = new Label("Feels like: -");
-        pressureLayout2.addComponents(feelsLike2);
+        descriptionLayout2.addComponents(feelsLike2);
 
-        mainDescriptionLayout.addComponents(descriptionLayout2, pressureLayout2);
-        mainLayout.addComponents(dashboard, mainDescriptionLayout);
+        mainDescriptionLayout.addComponents(descriptionLayout2);
+        mainLayout.addComponents(mainDescriptionLayout2);
 
     }
     // method that updates our UI, pulling data from json file
@@ -256,7 +255,7 @@ public class CurrentView extends UI {
         String city = cityTextField.getValue();
         String defaultUnit;
         weatherService.setCityName(city);
-        weatherService5Day.setCityName(city);
+        weatherService5Day.setCityName2(city);
 
         if(unitSelect.getValue().equals("F")){
             weatherService.setUnit("imperial");
@@ -288,7 +287,6 @@ public class CurrentView extends UI {
             weatherDescription.setValue("Description: "+weatherDescriptionNew);
             minTemp.setValue("Min temp: "+weatherService.returnMain().getInt("temp_min")+unitSelect.getValue());
             maxTemp.setValue("Max temp: "+weatherService.returnMain().getInt("temp_max")+unitSelect.getValue());
-            pop.setValue("Pressure: "+weatherService5Day.returnMain().getInt("pop"));
             pressure.setValue("Pressure: "+weatherService.returnMain().getInt("pressure"));
             humidity.setValue("Humidity: "+weatherService.returnMain().getInt("humidity"));
             windSpeed.setValue("Wind speed: "+weatherService.returnWind().getInt("speed"));
@@ -298,9 +296,10 @@ public class CurrentView extends UI {
             weatherDescription2.setValue("Description: "+weatherDescriptionNew);
             minTemp2.setValue("Min temp: "+weatherService5Day.returnMain().getInt("temp_min")+unitSelect.getValue());
             maxTemp2.setValue("Max temp: "+weatherService5Day.returnMain().getInt("temp_max")+unitSelect.getValue());
+            pop.setValue("Rain Probability: "+weatherService5Day.returnMain().getInt("pop"));
             pressure2.setValue("Pressure: "+weatherService5Day.returnMain().getInt("pressure"));
             humidity2.setValue("Humidity: "+weatherService5Day.returnMain().getInt("humidity"));
-            windSpeed2.setValue("Wind speed: "+weatherService5Day.returnWind().getInt("speed"));
+            windSpeed2.setValue("Wind speed: "+weatherService5Day.getSpeed().getInt("speed"));
             windDegree2.setValue("Wind degree: "+weatherService5Day.returnWind().getInt("deg"));
             feelsLike2.setValue("Feels Like: "+weatherService5Day.returnMain().getDouble("feels_like"));
 
@@ -311,3 +310,4 @@ public class CurrentView extends UI {
 
     }
 }
+*/

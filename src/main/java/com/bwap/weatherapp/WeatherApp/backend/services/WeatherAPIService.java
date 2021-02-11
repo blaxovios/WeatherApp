@@ -13,9 +13,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.DaysList;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Main;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Weather;
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Wind;
+import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.City;
 
 
 import java.io.IOException;
@@ -25,24 +23,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherAPIService {
-	
+
 	private final String API_URL;
 	private final String API_KEY;
-	private final String cityName;
-	
-	
-	public WeatherAPIService(String aPI_URL, String aPI_KEY, cityName) {
+
+	public WeatherAPIService(String aPI_URL, String aPI_KEY) {
 		API_URL = aPI_URL;
 		API_KEY = aPI_KEY;
-		cityName = cityName;
 	}
-	
-	
+
+
 	// get popular movies 
-	/* https://api.themoviedb.org/3/discover/movie */
+	// https://api.themoviedb.org/3/discover/movie //
 	
 	public List<WeatherInfo> getWeather5DayForecast() throws WeatherAPIException {
-		Weather5DayResults result = getAPIData(cityName, API_URL, API_KEY);
+		Weather5DayResults result = getAPIData(API_URL, API_KEY);
 		List<WeatherInfo> weatherInfoDaysList = new ArrayList<>(result.getList().size());
 		for (DaysList theDaysList : result.getList()) {
 			weatherInfoDaysList.add(new WeatherInfo(theDaysList));
@@ -50,24 +45,17 @@ public class WeatherAPIService {
 		return weatherInfoDaysList;
 	}
 
-	
+
 	// get API Data
 	
-	private Weather5DayResults getAPIData(String parameter, String API_URL, String API_KEY)
+	private Weather5DayResults getAPIData(String API_URL, String API_KEY)
 			throws WeatherAPIException {
 		try {
 			
 			// https://api.themoviedb.org/3/discover/movie?primary_release_year=2020
-			
-			
+
 			final URIBuilder uriBuilder = new URIBuilder(API_URL)
-					.addParameter("{API key}", API_KEY)
-					.addParameter("{city name}" ,cityName);
-			if (parameter != null && !parameter.isBlank()) {
-				uriBuilder.addParameter("q", parameter);
-			}else {
-					uriBuilder.addParameter("Athens", parameter);
-				}
+					.addParameter("appid" ,API_KEY);
 			final URI uri = uriBuilder.build();
 
 			final HttpGet getRequest = new HttpGet(uri);
