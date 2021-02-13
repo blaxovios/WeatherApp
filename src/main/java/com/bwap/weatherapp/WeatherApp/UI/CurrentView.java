@@ -1,9 +1,8 @@
-/*package com.bwap.weatherapp.WeatherApp.UI;
+package com.bwap.weatherapp.WeatherApp.UI;
 
-
-import com.bwap.weatherapp.WeatherApp.backend.model.weatherdb.Wind;
-import com.bwap.weatherapp.WeatherApp.backend.CurrentWeatherService;
-import com.bwap.weatherapp.WeatherApp.backend.Weather5DayService;
+import com.bwap.weatherapp.WeatherApp.backend.services.CurrentWeatherService;
+import com.bwap.weatherapp.WeatherApp.backend.services.Weather5DayService;
+import com.vaadin.annotations.Theme;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
 import com.vaadin.server.ExternalResource;
@@ -19,10 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 
 @SpringUI(path = "")
+@Theme("valo")
 public class CurrentView extends UI {
 
     @Autowired
     private CurrentWeatherService weatherService;
+    @Autowired
     private Weather5DayService weatherService5Day;
 
     private VerticalLayout mainLayout;
@@ -34,7 +35,6 @@ public class CurrentView extends UI {
     private Label currentWeatherCond;
     private Label currentWeatherCond2;
     private Label currentTemp;
-    private Label currentTemp2;
     private HorizontalLayout mainDescriptionLayout;
     private HorizontalLayout mainDescriptionLayout2;
     private Label weatherDescription;
@@ -47,7 +47,6 @@ public class CurrentView extends UI {
     private Label windDegree;
     private Label feelsLike;
     private Image iconImg;
-    private Label weatherDescription2;
     private Label maxTemp2;
     private Label minTemp2;
     private Label humidity2;
@@ -216,10 +215,6 @@ public class CurrentView extends UI {
         dt2 = new Label("Lastly updated: -");
         descriptionLayout2.addComponents(dt2);
 
-        // Weather description
-        weatherDescription2 = new Label("Now: -");
-        descriptionLayout2.addComponents(weatherDescription2);
-
         // Min Temperature
         minTemp2 = new Label("Min: -");
         descriptionLayout2.addComponents(minTemp2);
@@ -259,10 +254,12 @@ public class CurrentView extends UI {
 
         if(unitSelect.getValue().equals("F")){
             weatherService.setUnit("imperial");
+            weatherService5Day.setUnit2("imperial");
             unitSelect.setValue("F");
             defaultUnit = "\u00b0"+"F";
         }else{
             weatherService.setUnit("metric");
+            weatherService5Day.setUnit2("metric");
             defaultUnit = "\u00b0"+"C";
             unitSelect.setValue("C");
         }
@@ -282,7 +279,6 @@ public class CurrentView extends UI {
                 weatherDescriptionNew = weatherObj.getString("description");
             }
 
-
             iconImg.setSource(new ExternalResource("http://openweathermap.org/img/wn/"+iconCode+"@2x.png"));
             weatherDescription.setValue("Description: "+weatherDescriptionNew);
             minTemp.setValue("Min temp: "+weatherService.returnMain().getInt("temp_min")+unitSelect.getValue());
@@ -291,23 +287,18 @@ public class CurrentView extends UI {
             humidity.setValue("Humidity: "+weatherService.returnMain().getInt("humidity"));
             windSpeed.setValue("Wind speed: "+weatherService.returnWind().getInt("speed"));
             windDegree.setValue("Wind degree: "+weatherService.returnWind().getInt("deg"));
-            feelsLike.setValue("Feels Like: "+weatherService.returnMain().getDouble("feels_like"));
+            feelsLike.setValue("Feels Like: "+weatherService.returnMain().getInt("feels_like"));
 
-            weatherDescription2.setValue("Description: "+weatherDescriptionNew);
-            minTemp2.setValue("Min temp: "+weatherService5Day.returnMain().getInt("temp_min")+unitSelect.getValue());
-            maxTemp2.setValue("Max temp: "+weatherService5Day.returnMain().getInt("temp_max")+unitSelect.getValue());
-            pop.setValue("Rain Probability: "+weatherService5Day.returnMain().getInt("pop"));
-            pressure2.setValue("Pressure: "+weatherService5Day.returnMain().getInt("pressure"));
-            humidity2.setValue("Humidity: "+weatherService5Day.returnMain().getInt("humidity"));
-            windSpeed2.setValue("Wind speed: "+weatherService5Day.getSpeed().getInt("speed"));
-            windDegree2.setValue("Wind degree: "+weatherService5Day.returnWind().getInt("deg"));
-            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnMain().getDouble("feels_like"));
+            minTemp2.setValue("Min temp: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("temp_min")));
+            maxTemp2.setValue("Max temp: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("temp_max")));
+            pop.setValue("Rain Probability: "+weatherService5Day.returnPop().getInt("pop"));
+            pressure2.setValue("Pressure: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("pressure")));
+            humidity2.setValue("Humidity: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("humidity")));
+            windSpeed2.setValue("Wind speed: "+weatherService5Day.returnWind2().getInt("speed"));
+            windDegree2.setValue("Wind degree: "+weatherService5Day.returnWind2().getInt("deg"));
+            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("feels_like")));
 
-            mainLayout.addComponents(dashboard, mainDescriptionLayout);
-
-
-
+            mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2);
 
     }
 }
-*/
