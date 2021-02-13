@@ -289,14 +289,14 @@ public class CurrentView extends UI {
             windDegree.setValue("Wind degree: "+weatherService.returnWind().getInt("deg"));
             feelsLike.setValue("Feels Like: "+weatherService.returnMain().getInt("feels_like"));
 
-            minTemp2.setValue("Min temp: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("temp_min")));
-            maxTemp2.setValue("Max temp: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("temp_max")));
+            minTemp2.setValue("Min temp: "+weatherService5Day.returnWeatherArray2().getInt("temp_min"));
+            maxTemp2.setValue("Max temp: "+weatherService5Day.returnWeatherArray2().getInt("temp_max"));
             pop.setValue("Rain Probability: "+weatherService5Day.returnPop().getInt("pop"));
-            pressure2.setValue("Pressure: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("pressure")));
-            humidity2.setValue("Humidity: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("humidity")));
+            pressure2.setValue("Pressure: "+weatherService5Day.returnWeatherArray2().getInt("pressure"));
+            humidity2.setValue("Humidity: "+weatherService5Day.returnWeatherArray2().getInt("humidity"));
             windSpeed2.setValue("Wind speed: "+weatherService5Day.returnWind2().getInt("speed"));
             windDegree2.setValue("Wind degree: "+weatherService5Day.returnWind2().getInt("deg"));
-            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("feels_like")));
+            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnWeatherArray2().getInt("feels_like"));
 
             mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2);
 
