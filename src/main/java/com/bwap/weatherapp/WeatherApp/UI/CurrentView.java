@@ -2,6 +2,9 @@ package com.bwap.weatherapp.WeatherApp.UI;
 
 import com.bwap.weatherapp.WeatherApp.backend.services.CurrentWeatherService;
 import com.bwap.weatherapp.WeatherApp.backend.services.Weather5DayService;
+import com.bwap.weatherapp.WeatherApp.backend.weather5daydb.Sys;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vaadin.annotations.Theme;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ClassResource;
@@ -289,14 +292,21 @@ public class CurrentView extends UI {
             windDegree.setValue("Wind degree: "+weatherService.returnWind().getInt("deg"));
             feelsLike.setValue("Feels Like: "+weatherService.returnMain().getInt("feels_like"));
 
-            minTemp2.setValue("Min temp: "+weatherService5Day.returnWeatherArray2().getInt("temp_min"));
-            maxTemp2.setValue("Max temp: "+weatherService5Day.returnWeatherArray2().getInt("temp_max"));
+            String main = null;
+            JSONArray jsonArray2 = weatherService5Day.returnListArray2();
+            for (int i = 0; i< jsonArray2.length();i++){
+                JSONObject weatherObj2 = jsonArray2.getJSONObject(i);
+                main = weatherObj2.getJSONObject("main").getString("temp_min");
+            }
+
+            minTemp2.setValue("Min temp: "+main);
+            maxTemp2.setValue("Max temp: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("temp_max")));
             pop.setValue("Rain Probability: "+weatherService5Day.returnPop().getInt("pop"));
-            pressure2.setValue("Pressure: "+weatherService5Day.returnWeatherArray2().getInt("pressure"));
-            humidity2.setValue("Humidity: "+weatherService5Day.returnWeatherArray2().getInt("humidity"));
+            pressure2.setValue("Pressure: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("pressure")));
+            humidity2.setValue("Humidity: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("humidity")));
             windSpeed2.setValue("Wind speed: "+weatherService5Day.returnWind2().getInt("speed"));
             windDegree2.setValue("Wind degree: "+weatherService5Day.returnWind2().getInt("deg"));
-            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnWeatherArray2().getInt("feels_like"));
+            feelsLike2.setValue("Feels Like: "+weatherService5Day.returnListArray2().getInt(Integer.parseInt("feels_like")));
 
             mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2);
 

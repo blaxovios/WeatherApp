@@ -43,14 +43,14 @@ public class Weather5DayService {
         return listArray2;
     }
 
-    public JSONObject returnDtArray2() throws JSONException {
-        JSONObject dtArray2 = getWeatherFor5Days().getJSONObject("dt");
-        return dtArray2;
+    public JSONObject returnDt2() throws JSONException {
+        JSONObject dt2 = getWeatherFor5Days().getJSONObject("dt");
+        return dt2;
     }
 
-    public JSONObject returnWeatherArray2() throws JSONException {
-        JSONObject weatherArray2 = getWeatherFor5Days().getJSONObject("main");
-        return weatherArray2;
+    public JSONObject returnMain2() throws JSONException {
+        JSONObject main2 = getWeatherFor5Days().getJSONObject("main");
+        return main2;
     }
 
     public JSONObject returnWind2() throws JSONException {
@@ -83,4 +83,5 @@ public class Weather5DayService {
     public void setUnit2(String unit2) {
         this.unit2 = unit2;
     }
+
 }
