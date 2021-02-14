@@ -37,7 +37,6 @@ public class Weather5DayService {
         return null;
     }
 
-
     public JSONArray returnListArray2() throws JSONException {
         JSONArray listArray2 = getWeatherFor5Days().getJSONArray("list");
         return listArray2;

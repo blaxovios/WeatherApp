@@ -7,8 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
+
 
 @Service
 // Our pojo class which defines the current weather service entity
@@ -44,11 +44,6 @@ public class CurrentWeatherService {
     public JSONObject returnMain() throws JSONException {
         JSONObject main = getWeatherByCityName().getJSONObject("main");
         return main;
-    }
-
-    public JSONObject returnSys() throws JSONException {
-        JSONObject sys = getWeatherByCityName().getJSONObject("sys");
-        return sys;
     }
 
     public JSONObject returnWind() throws JSONException {
