@@ -30,7 +30,10 @@ public class CurrentView extends UI {
 
     private VerticalLayout mainLayout;
     private NativeSelect<String> unitSelect;
+    private NativeSelect<String> citySelect;
     private TextField cityTextField;
+    private String city;
+    private ArrayList<String> cities;
     private Button searchButton;
     private HorizontalLayout dashboard;
     private Label location;
@@ -128,14 +131,25 @@ public class CurrentView extends UI {
         formLayout.setMargin(true);
 
         // select Celsius or Fahrenheit
-        unitSelect = new NativeSelect<>();
-        ArrayList<String> items = new ArrayList<>();
-        items.add("C");
-        items.add("F");
+        unitSelect = new NativeSelect<>("Select temperature unit");
+        ArrayList<String> tempUnits = new ArrayList<>();
+        tempUnits.add("C");
+        tempUnits.add("F");
 
-        unitSelect.setItems(items);
-        unitSelect.setValue(items.get(0));
+        unitSelect.setItems(tempUnits);
+        unitSelect.setValue(tempUnits.get(0));
         formLayout.addComponent(unitSelect);
+
+        // select city from list
+        citySelect = new NativeSelect<>("Select a city");
+        cities = new ArrayList<>();
+        cities.add(city);
+
+        citySelect.setValue(cities.get(0));
+        formLayout.addComponent(citySelect);
+
+        // remove city from list
+
 
         // add the city text field
         cityTextField = new TextField();
@@ -284,10 +298,11 @@ public class CurrentView extends UI {
     }
     // method that updates our UI, pulling data from json file
     private void updateUI() throws JSONException {
-        String city = cityTextField.getValue();
+        city = cityTextField.getValue();
         String defaultUnit;
         weatherService.setCityName(city);
         weatherService5Day.setCityName2(city);
+        citySelect.setItems(city);
 
         if(unitSelect.getValue().equals("F")){
             weatherService.setUnit("imperial");
@@ -371,7 +386,7 @@ public class CurrentView extends UI {
             windDegree3.setValue("Wind degree: "+_deg);
             feelsLike3.setValue("Feels Like: "+_feelsLike);
 
-            mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
+            mainLayout.addComponents(mainLayout, dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
 
     }
 }
