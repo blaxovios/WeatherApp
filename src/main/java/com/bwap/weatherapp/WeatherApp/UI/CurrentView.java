@@ -35,6 +35,7 @@ public class CurrentView extends UI {
     private String city;
     private ArrayList<String> cities;
     private Button searchButton;
+    private Button deleteButton;
     private HorizontalLayout dashboard;
     private Label location;
     private Label currentWeatherCond;
@@ -71,6 +72,7 @@ public class CurrentView extends UI {
     private Label windDegree3;
     private Label feelsLike3;
 
+    // Main view function requests
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         mainLayout();
@@ -93,9 +95,20 @@ public class CurrentView extends UI {
             }else
                 Notification.show("Please enter the city name");
         });
+        deleteButton.addClickListener(clickEvent -> {
+            if (!cities.equals(city) && !cityTextField.equals(city)){
+                try {
+                    updateUI();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else
+                Notification.show("Nothing happened");
+        });
     }
-
+    // Vaadin's UI Layouts below
     private void mainLayout() {
+        // Set image
         iconImg = new Image();
         mainLayout = new VerticalLayout();
         mainLayout.setWidth("100%");
@@ -105,6 +118,7 @@ public class CurrentView extends UI {
         setContent(mainLayout);
     }
     private void setHeader(){
+        // Main header
         HorizontalLayout header = new HorizontalLayout();
         header.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         Label title = new Label("Weather Forecast");
@@ -113,8 +127,8 @@ public class CurrentView extends UI {
 
         mainLayout.addComponents(header);
     }
-    // method to add an image logo for my main view
     private void setLogo(){
+        // method to add an image logo for the main view
         HorizontalLayout logo = new HorizontalLayout();
         logo.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         Image img = new Image(null, new ClassResource("/static/weatherlogo.png"));
@@ -131,7 +145,7 @@ public class CurrentView extends UI {
         formLayout.setMargin(true);
 
         // select Celsius or Fahrenheit
-        unitSelect = new NativeSelect<>("Select temperature unit");
+        unitSelect = new NativeSelect<>();
         ArrayList<String> tempUnits = new ArrayList<>();
         tempUnits.add("C");
         tempUnits.add("F");
@@ -141,7 +155,7 @@ public class CurrentView extends UI {
         formLayout.addComponent(unitSelect);
 
         // select city from list
-        citySelect = new NativeSelect<>("Select a city");
+        citySelect = new NativeSelect<>("Cities");
         cities = new ArrayList<>();
         cities.add(city);
 
@@ -149,7 +163,7 @@ public class CurrentView extends UI {
         formLayout.addComponent(citySelect);
 
         // remove city from list
-
+        cities.remove(citySelect.equals(city));
 
         // add the city text field
         cityTextField = new TextField();
@@ -160,6 +174,11 @@ public class CurrentView extends UI {
         searchButton = new Button();
         searchButton.setIcon(VaadinIcons.SEARCH);
         formLayout.addComponent(searchButton);
+
+        // add the delete button
+        deleteButton = new Button();
+        deleteButton.setIcon(VaadinIcons.DEL);
+        formLayout.addComponent(deleteButton);
 
         mainLayout.addComponents(formLayout);
     }
@@ -198,15 +217,12 @@ public class CurrentView extends UI {
         descriptionLayout.addComponent(currentWeatherCond);
         descriptionLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
 
-        // Weather description
         weatherDescription = new Label("Now: -");
         descriptionLayout.addComponents(weatherDescription);
 
-        // Min Temperature
         minTemp = new Label("Min: -");
         descriptionLayout.addComponents(minTemp);
 
-        // Max Temperature
         maxTemp = new Label("Max: -");
         descriptionLayout.addComponents(maxTemp);
 
@@ -250,13 +266,11 @@ public class CurrentView extends UI {
         descriptionLayout2.addComponents(dt2);
         descriptionLayout3.addComponents(dt3);
 
-        // Min Temperature
         minTemp2 = new Label("Min: -");
         minTemp3 = new Label("Min: -");
         descriptionLayout2.addComponents(minTemp2);
         descriptionLayout3.addComponents(minTemp3);
 
-        // Max Temperature
         maxTemp2 = new Label("Max: -");
         maxTemp3 = new Label("Max: -");
         descriptionLayout2.addComponents(maxTemp2);
@@ -303,6 +317,7 @@ public class CurrentView extends UI {
         weatherService.setCityName(city);
         weatherService5Day.setCityName2(city);
         citySelect.setItems(city);
+        cities.add(city);
 
         if(unitSelect.getValue().equals("F")){
             weatherService.setUnit("imperial");
