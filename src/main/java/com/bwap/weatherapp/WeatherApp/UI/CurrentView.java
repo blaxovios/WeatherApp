@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 @SpringUI(path = "")
 @Theme("valo")
@@ -159,11 +161,12 @@ public class CurrentView extends UI {
         cities = new ArrayList<>();
         cities.add(city);
 
+        citySelect.setItems(cities);
         citySelect.setValue(cities.get(0));
         formLayout.addComponent(citySelect);
 
         // remove city from list
-        cities.remove(citySelect.equals(city));
+        cities.remove(city);
 
         // add the city text field
         cityTextField = new TextField();
@@ -316,8 +319,9 @@ public class CurrentView extends UI {
         String defaultUnit;
         weatherService.setCityName(city);
         weatherService5Day.setCityName2(city);
-        citySelect.setItems(city);
         cities.add(city);
+        citySelect.setItems(cities);
+
 
         if(unitSelect.getValue().equals("F")){
             weatherService.setUnit("imperial");
@@ -336,72 +340,73 @@ public class CurrentView extends UI {
         int temp = mainObject.getInt("temp");
         currentTemp.setValue(temp +defaultUnit);
 
-        // Get weather icon from openweathermap.org
+        // Update dashboardDetails for current weather with values from CurrentWeatherService
         String iconCode = null;
         String weatherDescriptionNew = null;
         JSONArray jsonArray = weatherService.returnWeatherArray();
             for (int i = 0; i< jsonArray.length();i++){
-                JSONObject weatherObj = jsonArray.getJSONObject(i);
-                iconCode = weatherObj.getString("icon");
-                weatherDescriptionNew = weatherObj.getString("description");
-            }
+            JSONObject weatherObj = jsonArray.getJSONObject(i);
+            iconCode = weatherObj.getString("icon");
+            weatherDescriptionNew = weatherObj.getString("description");
+        }
 
-            iconImg.setSource(new ExternalResource("http://openweathermap.org/img/wn/"+iconCode+"@2x.png"));
-            weatherDescription.setValue("Description: "+weatherDescriptionNew);
-            minTemp.setValue("Min temp: "+weatherService.returnMain().getInt("temp_min")+unitSelect.getValue());
-            maxTemp.setValue("Max temp: "+weatherService.returnMain().getInt("temp_max")+unitSelect.getValue());
-            pressure.setValue("Pressure: "+weatherService.returnMain().getInt("pressure"));
-            humidity.setValue("Humidity: "+weatherService.returnMain().getInt("humidity"));
-            windSpeed.setValue("Wind speed: "+weatherService.returnWind().getInt("speed"));
-            windDegree.setValue("Wind degree: "+weatherService.returnWind().getInt("deg"));
-            feelsLike.setValue("Feels Like: "+weatherService.returnMain().getInt("feels_like"));
+        iconImg.setSource(new ExternalResource("http://openweathermap.org/img/wn/"+iconCode+"@2x.png"));
+        weatherDescription.setValue("Description: "+weatherDescriptionNew);
+        minTemp.setValue("Min temp: "+weatherService.returnMain().getInt("temp_min")+unitSelect.getValue());
+        maxTemp.setValue("Max temp: "+weatherService.returnMain().getInt("temp_max")+unitSelect.getValue());
+        pressure.setValue("Pressure: "+weatherService.returnMain().getInt("pressure"));
+        humidity.setValue("Humidity: "+weatherService.returnMain().getInt("humidity"));
+        windSpeed.setValue("Wind speed: "+weatherService.returnWind().getInt("speed"));
+        windDegree.setValue("Wind degree: "+weatherService.returnWind().getInt("deg"));
+        feelsLike.setValue("Feels Like: "+weatherService.returnMain().getInt("feels_like"));
 
-            String tempMin = null;
-            String tempMax = null;
-            String _pressure = null;
-            String _humidity = null;
-            String _feelsLike = null;
-            String _pop = null;
-            String _speed = null;
-            String _deg = null;
-            String _dtTxt = null;
+        // Update dashboardDetails with values from Weather5DayService
+        String tempMin = null;
+        String tempMax = null;
+        String _pressure = null;
+        String _humidity = null;
+        String _feelsLike = null;
+        String _pop = null;
+        String _speed = null;
+        String _deg = null;
+        String _dtTxt = null;
 
-            JSONArray jsonArray2 = weatherService5Day.returnListArray2();
-            for (int i = 0; i< jsonArray2.length();i++){
-                JSONObject weatherObj2 = jsonArray2.getJSONObject(i);
-                tempMin = weatherObj2.getJSONObject("main").getString("temp_min");
-                tempMax = weatherObj2.getJSONObject("main").getString("temp_max");
-                _pressure = weatherObj2.getJSONObject("main").getString("pressure");
-                _humidity = weatherObj2.getJSONObject("main").getString("humidity");
-                _feelsLike = weatherObj2.getJSONObject("main").getString("feels_like");
-                _pop = weatherObj2.getString("pop");
-                _speed = weatherObj2.getJSONObject("wind").getString("speed");
-                _deg = weatherObj2.getJSONObject("wind").getString("deg");
-                _dtTxt = weatherObj2.getString("dt_txt");
-            }
+        JSONArray jsonArray2 = weatherService5Day.returnListArray2();
+        for (int i = 0; i< jsonArray2.length();i++){
+            JSONObject weatherObj2 = jsonArray2.getJSONObject(i);
+            tempMin = weatherObj2.getJSONObject("main").getString("temp_min");
+            tempMax = weatherObj2.getJSONObject("main").getString("temp_max");
+            _pressure = weatherObj2.getJSONObject("main").getString("pressure");
+            _humidity = weatherObj2.getJSONObject("main").getString("humidity");
+            _feelsLike = weatherObj2.getJSONObject("main").getString("feels_like");
+            _pop = weatherObj2.getString("pop");
+            _speed = weatherObj2.getJSONObject("wind").getString("speed");
+            _deg = weatherObj2.getJSONObject("wind").getString("deg");
+            _dtTxt = weatherObj2.getString("dt_txt");
+        }
 
-            dt2.setValue("Time: "+_dtTxt);
-            minTemp2.setValue("Min temp: "+tempMin+unitSelect.getValue());
-            maxTemp2.setValue("Max temp: "+tempMax+unitSelect.getValue());
-            pop.setValue("Rain Probability: "+_pop);
-            pressure2.setValue("Pressure: "+_pressure);
-            humidity2.setValue("Humidity: "+_humidity);
-            windSpeed2.setValue("Wind speed: "+_speed);
-            windDegree2.setValue("Wind degree: "+_deg);
-            feelsLike2.setValue("Feels Like: "+_feelsLike);
+        // Passing values to 1st column that represents our first 3-Hour forecast
+        dt2.setValue("Time: "+_dtTxt);
+        minTemp2.setValue("Min temp: "+tempMin+unitSelect.getValue());
+        maxTemp2.setValue("Max temp: "+tempMax+unitSelect.getValue());
+        pop.setValue("Rain Probability: "+_pop);
+        pressure2.setValue("Pressure: "+_pressure);
+        humidity2.setValue("Humidity: "+_humidity);
+        windSpeed2.setValue("Wind speed: "+_speed);
+        windDegree2.setValue("Wind degree: "+_deg);
+        feelsLike2.setValue("Feels Like: "+_feelsLike);
 
+        // Trying to values to 2nd column that represents our second 3-Hour forecast
+        dt3.setValue("Time: "+_dtTxt);
+        minTemp3.setValue("Min temp: "+tempMin+unitSelect.getValue());
+        maxTemp3.setValue("Max temp: "+tempMax+unitSelect.getValue());
+        pop2.setValue("Rain Probability: "+_pop);
+        pressure3.setValue("Pressure: "+_pressure);
+        humidity3.setValue("Humidity: "+_humidity);
+        windSpeed3.setValue("Wind speed: "+_speed);
+        windDegree3.setValue("Wind degree: "+_deg);
+        feelsLike3.setValue("Feels Like: "+_feelsLike);
 
-            dt3.setValue("Time: "+_dtTxt);
-            minTemp3.setValue("Min temp: "+tempMin+unitSelect.getValue());
-            maxTemp3.setValue("Max temp: "+tempMax+unitSelect.getValue());
-            pop2.setValue("Rain Probability: "+_pop);
-            pressure3.setValue("Pressure: "+_pressure);
-            humidity3.setValue("Humidity: "+_humidity);
-            windSpeed3.setValue("Wind speed: "+_speed);
-            windDegree3.setValue("Wind degree: "+_deg);
-            feelsLike3.setValue("Feels Like: "+_feelsLike);
-
-            mainLayout.addComponents(mainLayout, dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
-
+        mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
     }
 }

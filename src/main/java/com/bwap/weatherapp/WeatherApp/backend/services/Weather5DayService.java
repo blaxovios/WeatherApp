@@ -24,7 +24,7 @@ public class Weather5DayService {
         client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url("http://api.openweathermap.org/data/2.5/forecast?q="+getCityName2()+
-                        "&units="+getUnit2()+"&cnt=1&appid=4b6f297ddf6233fcabf54ac13365be0d")
+                        "&units="+getUnit2()+"&cnt=40&appid=4b6f297ddf6233fcabf54ac13365be0d")
                 .build();
 
         try {
