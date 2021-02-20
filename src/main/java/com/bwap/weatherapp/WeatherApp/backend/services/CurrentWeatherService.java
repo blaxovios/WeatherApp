@@ -51,7 +51,6 @@ public class CurrentWeatherService {
         return wind;
     }
 
-
     public String getCityName() {
         return cityName;
     }

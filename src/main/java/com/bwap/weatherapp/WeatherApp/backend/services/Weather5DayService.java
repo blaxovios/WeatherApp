@@ -67,6 +67,11 @@ public class Weather5DayService {
         return dt;
     }
 
+    public JSONObject returnName() throws JSONException {
+        JSONObject name = getWeatherFor5Days().getJSONObject("city");
+        return name;
+    }
+
     public String getCityName2() {
         return cityName2;
     }

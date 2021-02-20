@@ -73,6 +73,7 @@ public class CurrentView extends UI {
     private Label windSpeed3;
     private Label windDegree3;
     private Label feelsLike3;
+    private String _name = null;
 
     // Main view function requests
     @Override
@@ -80,7 +81,11 @@ public class CurrentView extends UI {
         mainLayout();
         setHeader();
         setLogo();
-        setForm();
+        try {
+            setForm();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         try {
             dashboardTitle();
         } catch (JSONException e) {
@@ -99,6 +104,16 @@ public class CurrentView extends UI {
         });
         deleteButton.addClickListener(clickEvent -> {
             if (!cities.equals(city) && !cityTextField.equals(city)){
+                try {
+                    updateUI();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else
+                Notification.show("Nothing happened");
+        });
+        citySelect.addValueChangeListener(valueChangeEvent -> {
+            if (!citySelect.getValue().equals(city)){
                 try {
                     updateUI();
                 } catch (JSONException e) {
@@ -140,7 +155,7 @@ public class CurrentView extends UI {
 
         mainLayout.addComponents(logo);
     }
-    private void setForm(){
+    private void setForm() throws JSONException {
         HorizontalLayout formLayout = new HorizontalLayout();
         formLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         formLayout.setSpacing(true);
@@ -156,14 +171,17 @@ public class CurrentView extends UI {
         unitSelect.setValue(tempUnits.get(0));
         formLayout.addComponent(unitSelect);
 
-        // select city from list
+        // add city to the drop-down list
         citySelect = new NativeSelect<>("Cities");
         cities = new ArrayList<>();
-        cities.add(city);
+        if(!cities.equals(_name)) {
+            cities.add(_name);
+        }
 
         citySelect.setItems(cities);
         citySelect.setValue(cities.get(0));
         formLayout.addComponent(citySelect);
+
 
         // remove city from list
         cities.remove(city);
@@ -319,8 +337,6 @@ public class CurrentView extends UI {
         String defaultUnit;
         weatherService.setCityName(city);
         weatherService5Day.setCityName2(city);
-        cities.add(city);
-        citySelect.setItems(cities);
 
 
         if(unitSelect.getValue().equals("F")){
@@ -395,6 +411,11 @@ public class CurrentView extends UI {
         windSpeed2.setValue("Wind speed: "+_speed);
         windDegree2.setValue("Wind degree: "+_deg);
         feelsLike2.setValue("Feels Like: "+_feelsLike);
+        _name = weatherService5Day.returnName().getString("name");
+        if(!cities.contains(_name)) {
+            cities.add(_name);
+        }
+        citySelect.setItems(cities);
 
         // Trying to values to 2nd column that represents our second 3-Hour forecast
         dt3.setValue("Time: "+_dtTxt);
