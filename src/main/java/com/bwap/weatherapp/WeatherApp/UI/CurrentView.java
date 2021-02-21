@@ -16,11 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+
 
 @SpringUI(path = "")
-@Theme("valo")
+@Theme("tests-valo-dark")
 public class CurrentView extends UI {
 
     @Autowired
@@ -105,24 +104,24 @@ public class CurrentView extends UI {
                 Notification.show("Please enter the city name");
         });
         deleteButton.addClickListener(clickEvent -> {
-            if (!citySelect.getValue().equals("")){
+            if (!(citySelect.getValue() == null)){
                 try {
                     removeCity();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }else
-                Notification.show("Nothing happened");
+                Notification.show("Select a city to delete");
         });
         refreshButton.addClickListener(clickEvent -> {
-            if (!citySelect.getValue().equals("")){
+            if (!(citySelect.getValue() == null)){
                 try {
                     refreshUI();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }else
-                Notification.show("Nothing happened");
+                Notification.show("Select a city to refresh weather");
         });
     }
     // Vaadin's UI Layouts below
@@ -145,6 +144,7 @@ public class CurrentView extends UI {
         header.addComponent(title);
 
         mainLayout.addComponents(header);
+
     }
     private void setLogo(){
         // method to add an image logo for the main view

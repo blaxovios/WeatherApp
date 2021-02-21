@@ -78,7 +78,13 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
         </dependency>
-    </dependencies>
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-themes -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+			<version>8.1.0</version>
+		</dependency>
+	</dependencies>
 
 	<dependencyManagement>
 		<dependencies>
