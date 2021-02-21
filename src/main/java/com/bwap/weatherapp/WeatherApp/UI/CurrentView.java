@@ -38,7 +38,9 @@ public class CurrentView extends UI {
     private ArrayList<String> cities;
     private Button searchButton;
     private Button deleteButton;
+    private Button refreshButton;
     private HorizontalLayout dashboard;
+    private HorizontalLayout formLayout;
     private Label location;
     private Label currentWeatherCond;
     private Label currentWeatherCond2;
@@ -103,19 +105,19 @@ public class CurrentView extends UI {
                 Notification.show("Please enter the city name");
         });
         deleteButton.addClickListener(clickEvent -> {
-            if (!cities.equals(city) && !cityTextField.equals(city)){
+            if (!citySelect.getValue().equals("")){
                 try {
-                    updateUI();
+                    removeCity();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }else
                 Notification.show("Nothing happened");
         });
-        citySelect.addValueChangeListener(valueChangeEvent -> {
-            if (!citySelect.getValue().equals(city)){
+        refreshButton.addClickListener(clickEvent -> {
+            if (!citySelect.getValue().equals("")){
                 try {
-                    updateUI();
+                    refreshUI();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -156,7 +158,7 @@ public class CurrentView extends UI {
         mainLayout.addComponents(logo);
     }
     private void setForm() throws JSONException {
-        HorizontalLayout formLayout = new HorizontalLayout();
+        formLayout = new HorizontalLayout();
         formLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
         formLayout.setSpacing(true);
         formLayout.setMargin(true);
@@ -184,7 +186,12 @@ public class CurrentView extends UI {
 
 
         // remove city from list
-        cities.remove(city);
+        if(!cities.equals(_name)) {
+            cities.remove(_name);
+        }
+
+        citySelect.setItems(cities);
+        formLayout.addComponent(citySelect);
 
         // add the city text field
         cityTextField = new TextField();
@@ -200,6 +207,11 @@ public class CurrentView extends UI {
         deleteButton = new Button();
         deleteButton.setIcon(VaadinIcons.DEL);
         formLayout.addComponent(deleteButton);
+
+        // add the refresh button so we can choose a city from the list and get weather data
+        refreshButton = new Button();
+        refreshButton.setIcon(VaadinIcons.REFRESH);
+        formLayout.addComponent(refreshButton);
 
         mainLayout.addComponents(formLayout);
     }
@@ -351,10 +363,6 @@ public class CurrentView extends UI {
             unitSelect.setValue(" C");
         }
 
-        location.setValue("Currently in "+city);
-        JSONObject mainObject = weatherService.returnMain();
-        int temp = mainObject.getInt("temp");
-        currentTemp.setValue(temp +defaultUnit);
 
         // Update dashboardDetails for current weather with values from CurrentWeatherService
         String iconCode = null;
@@ -412,10 +420,18 @@ public class CurrentView extends UI {
         windDegree2.setValue("Wind degree: "+_deg);
         feelsLike2.setValue("Feels Like: "+_feelsLike);
         _name = weatherService5Day.returnName().getString("name");
+
+        // current city weather by IP from class Location
+        location.setValue("Currently in "+_name);
+        int temp = weatherService.returnMain().getInt("temp");
+        currentTemp.setValue(temp +defaultUnit);
+
+        // add the city name (_name) you asked from json file to the drop-down list we created above
         if(!cities.contains(_name)) {
             cities.add(_name);
         }
         citySelect.setItems(cities);
+
 
         // Trying to values to 2nd column that represents our second 3-Hour forecast
         dt3.setValue("Time: "+_dtTxt);
@@ -428,6 +444,119 @@ public class CurrentView extends UI {
         windDegree3.setValue("Wind degree: "+_deg);
         feelsLike3.setValue("Feels Like: "+_feelsLike);
 
+        cityTextField.clear();
+
         mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
+    }
+    // remove city from drop-down list by clicking delete button
+    private void removeCity() throws JSONException{
+
+        if(citySelect.getValue().equals(_name) || !cities.equals(_name)) {
+            _name = citySelect.getValue();
+            citySelect.setValue(_name);
+            cities.remove(_name);
+            citySelect.setItems(cities);
+        }else Notification.show("City not removed");
+
+        mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
+    }
+    // method that refreshes our UI, when selecting a city from the list
+    private void refreshUI() throws JSONException {
+        if(!citySelect.getValue().equals(_name)) {
+            _name = citySelect.getValue();
+            String defaultUnit;
+            weatherService.setCityName(_name);
+            weatherService5Day.setCityName2(_name);
+
+
+            if (unitSelect.getValue().equals("F")) {
+                weatherService.setUnit("imperial");
+                weatherService5Day.setUnit2("imperial");
+                unitSelect.setValue(" F");
+                defaultUnit = "\u00b0" + " F";
+            } else {
+                weatherService.setUnit("metric");
+                weatherService5Day.setUnit2("metric");
+                defaultUnit = "\u00b0" + " C";
+                unitSelect.setValue(" C");
+            }
+
+            // current city weather by IP from class Location
+            location.setValue("Currently in " + _name);
+            int temp = weatherService.returnMain().getInt("temp");
+            currentTemp.setValue(temp + defaultUnit);
+
+            // Update dashboardDetails for current weather with values from CurrentWeatherService
+            String iconCode = null;
+            String weatherDescriptionNew = null;
+            JSONArray jsonArray = weatherService.returnWeatherArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject weatherObj = jsonArray.getJSONObject(i);
+                iconCode = weatherObj.getString("icon");
+                weatherDescriptionNew = weatherObj.getString("description");
+            }
+
+            iconImg.setSource(new ExternalResource("http://openweathermap.org/img/wn/" + iconCode + "@2x.png"));
+            weatherDescription.setValue("Description: " + weatherDescriptionNew);
+            minTemp.setValue("Min temp: " + weatherService.returnMain().getInt("temp_min") + unitSelect.getValue());
+            maxTemp.setValue("Max temp: " + weatherService.returnMain().getInt("temp_max") + unitSelect.getValue());
+            pressure.setValue("Pressure: " + weatherService.returnMain().getInt("pressure"));
+            humidity.setValue("Humidity: " + weatherService.returnMain().getInt("humidity"));
+            windSpeed.setValue("Wind speed: " + weatherService.returnWind().getInt("speed"));
+            windDegree.setValue("Wind degree: " + weatherService.returnWind().getInt("deg"));
+            feelsLike.setValue("Feels Like: " + weatherService.returnMain().getInt("feels_like"));
+
+            // Update dashboardDetails with values from Weather5DayService
+            String tempMin = null;
+            String tempMax = null;
+            String _pressure = null;
+            String _humidity = null;
+            String _feelsLike = null;
+            String _pop = null;
+            String _speed = null;
+            String _deg = null;
+            String _dtTxt = null;
+
+            JSONArray jsonArray2 = weatherService5Day.returnListArray2();
+            for (int i = 0; i < jsonArray2.length(); i++) {
+                JSONObject weatherObj2 = jsonArray2.getJSONObject(i);
+                tempMin = weatherObj2.getJSONObject("main").getString("temp_min");
+                tempMax = weatherObj2.getJSONObject("main").getString("temp_max");
+                _pressure = weatherObj2.getJSONObject("main").getString("pressure");
+                _humidity = weatherObj2.getJSONObject("main").getString("humidity");
+                _feelsLike = weatherObj2.getJSONObject("main").getString("feels_like");
+                _pop = weatherObj2.getString("pop");
+                _speed = weatherObj2.getJSONObject("wind").getString("speed");
+                _deg = weatherObj2.getJSONObject("wind").getString("deg");
+                _dtTxt = weatherObj2.getString("dt_txt");
+            }
+
+            // Passing values to 1st column that represents our first 3-Hour forecast
+            dt2.setValue("Time: " + _dtTxt);
+            minTemp2.setValue("Min temp: " + tempMin + unitSelect.getValue());
+            maxTemp2.setValue("Max temp: " + tempMax + unitSelect.getValue());
+            pop.setValue("Rain Probability: " + _pop);
+            pressure2.setValue("Pressure: " + _pressure);
+            humidity2.setValue("Humidity: " + _humidity);
+            windSpeed2.setValue("Wind speed: " + _speed);
+            windDegree2.setValue("Wind degree: " + _deg);
+            feelsLike2.setValue("Feels Like: " + _feelsLike);
+
+
+            // Trying to values to 2nd column that represents our second 3-Hour forecast
+            dt3.setValue("Time: " + _dtTxt);
+            minTemp3.setValue("Min temp: " + tempMin + unitSelect.getValue());
+            maxTemp3.setValue("Max temp: " + tempMax + unitSelect.getValue());
+            pop2.setValue("Rain Probability: " + _pop);
+            pressure3.setValue("Pressure: " + _pressure);
+            humidity3.setValue("Humidity: " + _humidity);
+            windSpeed3.setValue("Wind speed: " + _speed);
+            windDegree3.setValue("Wind degree: " + _deg);
+            feelsLike3.setValue("Feels Like: " + _feelsLike);
+
+            cityTextField.clear();
+
+            mainLayout.addComponents(dashboard, mainDescriptionLayout, mainDescriptionLayout2, mainDescriptionLayout3);
+        } else Notification.show("Cannot refresh weather data");
     }
 }
